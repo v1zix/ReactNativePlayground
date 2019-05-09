@@ -31,3 +31,12 @@ allprojects {
         }
     }
 }
+
+ext {
+    if (!project.hasProperty("apiUrl")) {
+        apiUrl = "https://api-staging.example.com"
+    }
+    if (!project.hasProperty("deploymentKey")) {
+        deploymentKey = "456staging"
+    }
+}
