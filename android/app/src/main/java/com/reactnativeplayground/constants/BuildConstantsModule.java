@@ -27,6 +27,8 @@ public class BuildConstantsModule extends ReactContextBaseJavaModule {
     constants.put("buildType", BuildConfig.BUILD_TYPE);
     constants.put("versionCode", BuildConfig.VERSION_CODE);
     constants.put("versionName", BuildConfig.VERSION_NAME);
+    constants.put("apiUrl", BuildConfig.apiUrl);
+    constants.put("deploymentKey", BuildConfig.deploymentKey);
     return constants;
   }
 }
