@@ -1,0 +1,53 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+platform :ios do
+  desc 'Builds new version of the app'
+  lane :build do
+    # add actions here: https://docs.fastlane.tools/actions
+
+    create_js_bundle
+    update_info_plist_vals
+    build_ios_app(
+      scheme: 'ReactNativePlayground',
+      configuration: ENV['CONFIGURATION_TYPE'],
+      project: './ReactNativePlayground.xcodeproj',
+      export_method: ENV['EXPORT_METHOD'],
+      derived_data_path: './build/ReactNativePlayground',
+    )
+  end
+
+  desc 'Update plist to add our build time constants'
+  lane :update_info_plist_vals do
+    update_info_plist( # Advanced processing: find URL scheme for particular key and replace value
+      plist_path: 'ReactNativePlayground/Info.plist',
+      block: proc do |plist|
+        plist['CFBundleIdentifier'] = 'com.example.ReactNativePlayground'
+        plist['CFBundleDisplayName'] = 'React Native Playground'
+        plist['apiUrl'] = ENV['API_URL']
+        plist['deploymentKey'] = ENV['DEPLOYMENT_KEY']
+      end
+    )
+  end
+
+  desc 'Create JavaScript bundle for offline use'
+  lane :create_js_bundle do
+    Dir.chdir '../../' do
+      sh('react-native bundle --dev false --platform ios --entry-file ./index.js --bundle-output ios/main.jsbundle --assets-dest ios')
+    end
+  end
+end
