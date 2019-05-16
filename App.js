@@ -6,8 +6,8 @@
  * @flow
  */
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import React, { Component } from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import BuildConstants from './BuildConstantsExample';
 
 const instructions = Platform.select({
@@ -28,6 +28,8 @@ export default class App extends Component<Props> {
         <Text style={styles.instructions}>Build constants below!</Text>
         <Text style={styles.instructions}>Version code: {BuildConstants.versionCode}</Text>
         <Text style={styles.instructions}>Version name: {BuildConstants.versionName}</Text>
+        <Text style={styles.instructions}>API URL: {BuildConstants.apiUrl}</Text>
+        <Text style={styles.instructions}>Deployment key: {BuildConstants.deploymentKey}</Text>
       </View>
     );
   }
