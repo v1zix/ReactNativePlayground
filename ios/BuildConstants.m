@@ -9,9 +9,13 @@ RCT_EXPORT_MODULE();
 {
   NSString *versionCode = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
   NSString *versionName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+  NSString *apiUrl = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"apiUrl"];
+  NSString *deploymentKey = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"deploymentKey"];
   return @{
            @"versionCode": versionCode,
-           @"versionName": versionName
+           @"versionName": versionName,
+           @"apiUrl": apiUrl,
+           @"deploymentKey": deploymentKey
            };
 }
 
