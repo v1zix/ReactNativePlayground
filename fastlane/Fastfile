@@ -26,17 +26,15 @@ platform :ios do
       raise("Environment variable #{var} not set") if ENV[var].nil?
     end
 
-    create_js_bundle
-    Dir.chdir("#{PROJ_DIR}/ios/") do
-      update_info_plist_vals
-      build_ios_app(
-        scheme: 'ReactNativePlayground',
-        configuration: ENV['CONFIGURATION_TYPE'],
-        project: "#{PROJ_DIR}/ios/ReactNativePlayground.xcodeproj",
-        export_method: ENV['EXPORT_METHOD'],
-        derived_data_path: "#{PROJ_DIR}/ios/build/ReactNativePlayground",
-      )
-    end
+    create_js_bundle(platform: 'ios', dev: 'false')
+    update_info_plist_vals
+    build_ios_app(
+      scheme: 'ReactNativePlayground',
+      configuration: ENV['CONFIGURATION_TYPE'],
+      project: "#{PROJ_DIR}/ios/ReactNativePlayground.xcodeproj",
+      export_method: ENV['EXPORT_METHOD'],
+      derived_data_path: "#{PROJ_DIR}/ios/build/ReactNativePlayground",
+    )
   end
 
   desc 'Update plist to add our build time constants'
@@ -54,9 +52,35 @@ platform :ios do
   end
 
   desc 'Create JavaScript bundle for offline use'
-  lane :create_js_bundle do
+  lane :create_js_bundle do |params|
+    raise('Platform is required, use "android" or "ios"') if params[:platform] != 'ios' && param[:platform] != 'android'
+
+    dev = params[:dev] || 'false'
+    asset_dest = params[:platform] == 'ios' ? 'ios' : 'android/build/intermediates'
     Dir.chdir(PROJ_DIR) do
-      sh('react-native bundle --dev false --platform ios --entry-file ./index.js --bundle-output ios/main.jsbundle --assets-dest ios')
+      `react-native bundle --dev #{dev} --platform #{params[:platform]} --entry-file ./index.js --bundle-output #{params[:platform]}/main.jsbundle --assets-dest #{asset_dest}`
     end
+  end
+end
+
+platform :android do
+  desc 'Build a new version of the app'
+  lane :build do
+    raise('Environment variable CONFIGURATION_TYPE is not set') if ENV['CONFIGURATION_TYPE'].nil?
+
+    gradle_properties = {
+      apiUrl: ENV['API_URL'],
+      deploymentKey: ENV['DEPLOYMENT_KEY']
+    }
+
+    # No need to bundle JavaScript before gradle call because bundling
+    # happens in app/build.gradle file
+    gradle(
+      task: 'assemble',
+      build_type: ENV['CONFIGURATION_TYPE'],
+      project_dir: "#{PROJ_DIR}/android/",
+      gradle_path: "#{PROJ_DIR}/android/gradlew",
+      properties: gradle_properties
+    )
   end
 end
